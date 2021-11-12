@@ -49,3 +49,8 @@ app.post("/query", function(req, res) {
 app.listen(port,() => {
 	console.log("Started on PORT " + port);
 });
+
+app.post("/report", function(req, res) {
+	console.log(req.body.site);
+	res.send("Request successful!");
+});
