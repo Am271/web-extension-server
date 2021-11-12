@@ -1,7 +1,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require('cors');
+var mysql = require('mysql');
+
 const port = Number(process.argv[2]) //port number as first argument: node server.js <port>
+
+var con = mysql.createConnection({
+  host: "remotemysql.com",
+  user: "KOVPwh7gZl",
+  password: "EpNstXzaUh",
+  database: "KOVPwh7gZl"
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected to Remote MySQL Server...");
+});
 
 app = express();
 app.use(express.json());
@@ -20,8 +34,16 @@ app.post("/auth", function(req, res) {
 
 app.post("/query", function(req, res) {
 	res.setHeader('Content-Type', 'application/json');
-	console.log(req.body);
-	res.json({'message' : 'Good day!'})
+	// console.log(req.body.domain);
+	con.query("SELECT * FROM phishing_domains WHERE name='" + req.body.domain + "';", function (err, result) {
+		if (err) throw err;
+		if(result.length > 0) { // console.log(result);
+			res.json({'safe' : false});
+		}
+		else {
+			res.json({'safe' : true});
+		}
+ 	});	
 });
 
 app.listen(port,() => {
